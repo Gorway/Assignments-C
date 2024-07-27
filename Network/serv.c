@@ -16,13 +16,11 @@ int main() {
     char buffer[BUFFER_SIZE] = {0};
     const char *hello = "Привет от сервера";
 
-    // Создание сокета
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
 
-    // Установка опций сокета
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
         perror("setsockopt");
         exit(EXIT_FAILURE);
@@ -31,19 +29,16 @@ int main() {
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons( PORT );
 
-    // Привязка сокета к адресу и порту
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) {
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
 
-    // Ожидание подключения клиентов
     if (listen(server_fd, MAX_CLIENTS) < 0) {
         perror("listen");
         exit(EXIT_FAILURE);
     }
 
-    // Принятие клиентских подключений
     for (int i = 0; i < MAX_CLIENTS; i++) {
         printf("Ожидание подключений...\n");
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
@@ -51,11 +46,9 @@ int main() {
             exit(EXIT_FAILURE);
         }
 
-        // Чтение сообщения от клиента
         valread = read( new_socket , buffer, BUFFER_SIZE);
         printf("%s\n",buffer);
 
-        // Отправка ответа клиенту
         send(new_socket , hello , strlen(hello) , 0 );
         printf("Приветное сообщение отправлено\n");
         close(new_socket);
