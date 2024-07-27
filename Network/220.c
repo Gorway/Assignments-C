@@ -8,7 +8,6 @@
 #define TEXT "Hello, world!"
 
 int main() {
-    // Создаем файл и пишем в него текст
     int fd = open(FILENAME, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (fd == -1) {
         perror("Error opening file");
@@ -23,18 +22,16 @@ int main() {
     
     close(fd);
 
-    // Создаем новый процесс
     pid_t pid = fork();
     if (pid == -1) {
         perror("fork");
         exit(EXIT_FAILURE);
     }
 
-    if (pid == 0) { // Дочерний процесс
-        // Заменяем текущий процесс на новую программу, передавая ей дескриптор файла
+    if (pid == 0) { 
         execlp("./reader", "./reader", FILENAME, NULL);
-    } else { // Родительский процесс
-        // Ждем завершения дочернего процесса
+    } else { 
+     
         waitpid(pid, NULL, 0);
     }
 
